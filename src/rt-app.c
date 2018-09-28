@@ -295,7 +295,7 @@ int calibrate_cpu_cycles(int clock)
 
 }
 
-static inline unsigned long loadwait(unsigned long exec)
+static inline unsigned long loadwait(unsigned long exec, int *ops)
 {
 	unsigned long load_count, secs, perf;
 	int i;
@@ -315,6 +315,7 @@ static inline unsigned long loadwait(unsigned long exec)
 
 	for (i = 0; i < secs; i++) {
 		load_count = 1000000000/p_load;
+		*ops += load_count+1;
 		waste_cpu_cycles(load_count);
 		exec -= 1000000;
 	}
@@ -324,6 +325,7 @@ static inline unsigned long loadwait(unsigned long exec)
 	 */
 	load_count = (exec * 1000)/p_load;
 	waste_cpu_cycles(load_count);
+	*ops += load_count+1;
 
 	return perf;
 }
@@ -366,7 +368,7 @@ static void memload(unsigned long count, struct _rtapp_iomem_buf *iomem)
 
 static int run_event(event_data_t *event, int dry_run,
 		unsigned long *perf, rtapp_resource_t *resources,
-		struct timespec *t_first, log_data_t *ldata)
+		struct timespec *t_first, log_data_t *ldata, int *ops)
 {
 	rtapp_resource_t *rdata = &(resources[event->res]);
 	rtapp_resource_t *ddata = &(resources[event->dep]);
@@ -434,7 +436,7 @@ static int run_event(event_data_t *event, int dry_run,
 			log_debug("run %d ", event->duration);
 			ldata->c_duration += event->duration;
 			clock_gettime(CLOCK_MONOTONIC, &t_start);
-			*perf += loadwait(event->duration);
+			*perf += loadwait(event->duration, ops);
 			clock_gettime(CLOCK_MONOTONIC, &t_end);
 			t_end = timespec_sub(&t_end, &t_start);
 			ldata->duration += timespec_to_usec(&t_end);
@@ -451,7 +453,7 @@ static int run_event(event_data_t *event, int dry_run,
 
 			do {
 				/* Do work for 32usec  */
-				*perf += loadwait(32);
+				*perf += loadwait(32, ops);
 
 				clock_gettime(CLOCK_MONOTONIC, &t_end);
 				diff_ns = timespec_sub_to_ns(&t_end, &t_start);
@@ -592,7 +594,7 @@ int run(int ind,
 	phase_data_t *pdata,
 	rtapp_resource_t *resources,
 	struct timespec *t_first,
-	log_data_t *ldata)
+	log_data_t *ldata, int *ops)
 {
 	event_data_t *events = pdata->events;
 	int nbevents = pdata->nbevents;
@@ -610,7 +612,7 @@ int run(int ind,
 						"[%d] executing %d",
 						ind, i);
 		lock += run_event(&events[i], !continue_running, &perf,
-				  resources, t_first, ldata);
+				  resources, t_first, ldata, ops);
 	}
 
 	return perf;
@@ -936,6 +938,7 @@ void *thread_body(void *arg)
 	unsigned int timings_size, timing_loop;
 	struct sched_attr attr;
 	int ret, phase, phase_loop, thread_loop, log_idx;
+	int ops = 0;
 
 	/* Set thread name */
 	ret = pthread_setname_np(pthread_self(), data->name);
@@ -1043,7 +1046,7 @@ void *thread_body(void *arg)
 		memset(&ldata, 0, sizeof(ldata));
 		clock_gettime(CLOCK_MONOTONIC, &t_start);
 		ldata.perf = run(data->ind, pdata, *(data->resources),
-				&t_first, &ldata);
+				&t_first, &ldata, &ops);
 		clock_gettime(CLOCK_MONOTONIC, &t_end);
 
 		if (timings)
@@ -1122,6 +1125,7 @@ void *thread_body(void *arg)
 		for (j = 0; j < log_idx; j++)
 			log_timing(data->log_handler, &timings[j]);
 	}
+	fprintf(data->log_handler,"Total wasted cycles =%d\n",ops);
 
 
 	if (opts.ftrace)
