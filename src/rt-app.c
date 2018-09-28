@@ -988,10 +988,10 @@ void *thread_body(void *arg)
 	log_notice("[%d] starting thread ...\n", data->ind);
 
 	if (opts.logsize)
-		fprintf(data->log_handler, "%s %8s %8s %8s %15s %15s %15s %10s %10s %10s %10s\n",
+		fprintf(data->log_handler, "%s %8s %8s %8s %15s %15s %15s %10s %10s %10s %10s %8s\n",
 				   "#idx", "perf", "run", "period",
 				   "start", "end", "rel_st", "slack",
-				   "c_duration", "c_period", "wu_lat");
+				   "c_duration", "c_period", "wu_lat", "cpu");
 
 	if (opts.ftrace)
 		log_ftrace(ft_data.marker_fd, "[%d] starts", data->ind);
@@ -1233,6 +1233,7 @@ int main(int argc, char* argv[])
 			 opts.logbasename);
 		fprintf(gnuplot_script,
 			"set terminal postscript enhanced color\n"
+			"set xtics rotate by 45 right\n"
 			"set output '%s'\n"
 			"set grid\n"
 			"set key outside right\n"

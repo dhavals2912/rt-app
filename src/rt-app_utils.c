@@ -148,7 +148,7 @@ void
 log_timing(FILE *handler, timing_point_t *t)
 {
 	fprintf(handler,
-		"%4d %8lu %8lu %8lu %15llu %15llu %15llu %10ld %10lu %10lu %10lu",
+		"%4d %8lu %8lu %8lu %15llu %15llu %15llu %10ld %10lu %10lu %10lu %4d",
 		t->ind,
 		t->perf,
 		t->duration,
@@ -159,7 +159,8 @@ log_timing(FILE *handler, timing_point_t *t)
 		t->slack,
 		t->c_duration,
 		t->c_period,
-		t->wu_latency
+		t->wu_latency,
+		sched_getcpu()
 	);
 	fprintf(handler, "\n");
 }

@@ -6,6 +6,10 @@ aclocal.m4
 *.txt
 *.swp
 *.patch
+*.json
+*.plot
+*.log
+*.eps
 cscope.out
 ID
 GPATH
