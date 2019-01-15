@@ -1,23 +1,23 @@
 /*
-This file is part of rt-app - https://launchpad.net/rt-app
-Copyright (C) 2010  Giacomo Bagnoli <g.bagnoli@asidev.com>
-Copyright (C) 2014  Juri Lelli <juri.lelli@gmail.com>
-Copyright (C) 2014  Vincent Guittot <vincent.guittot@linaro.org>
+   This file is part of rt-app - https://launchpad.net/rt-app
+   Copyright (C) 2010  Giacomo Bagnoli <g.bagnoli@asidev.com>
+   Copyright (C) 2014  Juri Lelli <juri.lelli@gmail.com>
+   Copyright (C) 2014  Vincent Guittot <vincent.guittot@linaro.org>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   */
 
 /* for CPU_SET macro */
 #define _GNU_SOURCE
@@ -188,11 +188,11 @@ void waste_cpu_cycles(unsigned long long load_loops)
 }
 
 /*
-* calibrate_cpu_cycles_1()
-* 1st method to calibrate the ns per loop value
-* We alternate idle period and run period in order to not trig some hw
-* protection mechanism like thermal mitgation
-*/
+ * calibrate_cpu_cycles_1()
+ * 1st method to calibrate the ns per loop value
+ * We alternate idle period and run period in order to not trig some hw
+ * protection mechanism like thermal mitgation
+ */
 int calibrate_cpu_cycles_1(int clock)
 {
 	struct timespec start, stop, sleep;
@@ -221,10 +221,10 @@ int calibrate_cpu_cycles_1(int clock)
 			return avg_per_loop;
 
 		/*
-		* use several loop duration in order to be sure to not
-		* fall into a specific platform loop duration
-		*(like the cpufreq period)
-		*/
+		 * use several loop duration in order to be sure to not
+		 * fall into a specific platform loop duration
+		 *(like the cpufreq period)
+		 */
 		/*randomize the number of loops and recheck 1000 times*/
 		max_load_loop += 33333;
 		max_load_loop %= 1000000;
@@ -233,11 +233,11 @@ int calibrate_cpu_cycles_1(int clock)
 }
 
 /*
-* calibrate_cpu_cycles_2()
-* 2nd method to calibrate the ns per loop value
-* We continously runs something to ensure that CPU is set to max freq by the
-* governor
-*/
+ * calibrate_cpu_cycles_2()
+ * 2nd method to calibrate the ns per loop value
+ * We continously runs something to ensure that CPU is set to max freq by the
+ * governor
+ */
 int calibrate_cpu_cycles_2(int clock)
 {
 	struct timespec start, stop;
@@ -262,10 +262,10 @@ int calibrate_cpu_cycles_2(int clock)
 			return avg_per_loop;
 
 		/*
-		* use several loop duration in order to be sure to not
-		* fall into a specific platform loop duration
-		*(like the cpufreq period)
-		*/
+		 * use several loop duration in order to be sure to not
+		 * fall into a specific platform loop duration
+		 *(like the cpufreq period)
+		 */
 		/*randomize the number of loops and recheck 1000 times*/
 		max_load_loop += 33333;
 		max_load_loop %= 1000000;
@@ -274,10 +274,10 @@ int calibrate_cpu_cycles_2(int clock)
 }
 
 /*
-* calibrate_cpu_cycles()
-* Use several methods to calibrate the ns per loop and get the min value which
-* correspond to the highest achievable compute capacity.
-*/
+ * calibrate_cpu_cycles()
+ * Use several methods to calibrate the ns per loop and get the min value which
+ * correspond to the highest achievable compute capacity.
+ */
 int calibrate_cpu_cycles(int clock)
 {
 	int calib1, calib2;
@@ -295,7 +295,7 @@ int calibrate_cpu_cycles(int clock)
 
 }
 
-static inline unsigned long loadwait(unsigned long exec, int *ops)
+static inline unsigned long loadwait(unsigned long exec, unsigned long int *ops)
 {
 	unsigned long load_count, secs, perf;
 	int i;
@@ -375,226 +375,226 @@ static int run_event(event_data_t *event, int dry_run,
 	unsigned long lock = 0;
 
 	switch(event->type) {
-	case rtapp_lock:
-		log_debug("lock %s ", rdata->name);
-		pthread_mutex_lock(&(rdata->res.mtx.obj));
-		lock = 1;
-		break;
-	case rtapp_unlock:
-		log_debug("unlock %s ", rdata->name);
-		pthread_mutex_unlock(&(rdata->res.mtx.obj));
-		lock = -1;
-		break;
-	default:
-		break;
+		case rtapp_lock:
+			log_debug("lock %s ", rdata->name);
+			pthread_mutex_lock(&(rdata->res.mtx.obj));
+			lock = 1;
+			break;
+		case rtapp_unlock:
+			log_debug("unlock %s ", rdata->name);
+			pthread_mutex_unlock(&(rdata->res.mtx.obj));
+			lock = -1;
+			break;
+		default:
+			break;
 	}
 
 	if (dry_run)
 		return lock;
 
 	switch(event->type) {
-	case rtapp_wait:
-		log_debug("wait %s ", rdata->name);
-		pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
-		break;
-	case rtapp_signal:
-		log_debug("signal %s ", rdata->name);
-		pthread_cond_signal(&(rdata->res.cond.obj));
-		break;
-	case rtapp_barrier:
-		log_debug("barrier %s ", rdata->name);
-		pthread_mutex_lock(&(rdata->res.barrier.m_obj));
-		if (rdata->res.barrier.waiting == 0) {
-			/* everyone is already waiting, signal */
-			pthread_cond_broadcast(&(rdata->res.barrier.c_obj));
-		} else {
-			/* not everyone is waiting, mark then wait */
-			rdata->res.barrier.waiting -= 1;
-			pthread_cond_wait(&(rdata->res.barrier.c_obj), &(rdata->res.barrier.m_obj));
-			rdata->res.barrier.waiting += 1;
-		}
-		pthread_mutex_unlock(&(rdata->res.barrier.m_obj));
-		break;
-	case rtapp_sig_and_wait:
-		log_debug("signal and wait %s", rdata->name);
-		pthread_cond_signal(&(rdata->res.cond.obj));
-		pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
-		break;
-	case rtapp_broadcast:
-		pthread_cond_broadcast(&(rdata->res.cond.obj));
-		break;
-	case rtapp_sleep:
-		{
-		struct timespec sleep = usec_to_timespec(event->duration);
-		log_debug("sleep %d ", event->duration);
-		nanosleep(&sleep, NULL);
-		}
-		break;
-	case rtapp_run:
-		{
-			struct timespec t_start, t_end;
-			log_debug("run %d ", event->duration);
-			ldata->c_duration += event->duration;
-			clock_gettime(CLOCK_MONOTONIC, &t_start);
-			*perf += loadwait(event->duration, ops);
-			clock_gettime(CLOCK_MONOTONIC, &t_end);
-			t_end = timespec_sub(&t_end, &t_start);
-			ldata->duration += timespec_to_usec(&t_end);
-		}
-		break;
-	case rtapp_runtime:
-		{
-			struct timespec t_start, t_end;
-			int64_t diff_ns;
-
-			log_debug("runtime %d ", event->duration);
-			ldata->c_duration += event->duration;
-			clock_gettime(CLOCK_MONOTONIC, &t_start);
-
-			do {
-				/* Do work for 32usec  */
-				*perf += loadwait(32, ops);
-
-				clock_gettime(CLOCK_MONOTONIC, &t_end);
-				diff_ns = timespec_sub_to_ns(&t_end, &t_start);
-			} while ((diff_ns / 1000) < event->duration);
-
-			t_end = timespec_sub(&t_end, &t_start);
-			ldata->duration += timespec_to_usec(&t_end);
-		}
-		break;
-	case rtapp_timer:
-		{
-			struct timespec t_period, t_now, t_wu, t_slack;
-			log_debug("timer %d ", event->duration);
-
-			t_period = usec_to_timespec(event->duration);
-			ldata->c_period += event->duration;
-
-			if (rdata->res.timer.init == 0) {
-				rdata->res.timer.init = 1;
-				rdata->res.timer.t_next = *t_first;
-			}
-
-			rdata->res.timer.t_next = timespec_add(&rdata->res.timer.t_next, &t_period);
-			clock_gettime(CLOCK_MONOTONIC, &t_now);
-			t_slack = timespec_sub(&rdata->res.timer.t_next, &t_now);
-			if (opts.cumulative_slack)
-				ldata->slack += timespec_to_usec_long(&t_slack);
-			else
-				ldata->slack = timespec_to_usec_long(&t_slack);
-			if (timespec_lower(&t_now, &rdata->res.timer.t_next)) {
-				clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &rdata->res.timer.t_next, NULL);
-				clock_gettime(CLOCK_MONOTONIC, &t_now);
-				t_wu = timespec_sub(&t_now, &rdata->res.timer.t_next);
-				ldata->wu_latency += timespec_to_usec(&t_wu);
+		case rtapp_wait:
+			log_debug("wait %s ", rdata->name);
+			pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
+			break;
+		case rtapp_signal:
+			log_debug("signal %s ", rdata->name);
+			pthread_cond_signal(&(rdata->res.cond.obj));
+			break;
+		case rtapp_barrier:
+			log_debug("barrier %s ", rdata->name);
+			pthread_mutex_lock(&(rdata->res.barrier.m_obj));
+			if (rdata->res.barrier.waiting == 0) {
+				/* everyone is already waiting, signal */
+				pthread_cond_broadcast(&(rdata->res.barrier.c_obj));
 			} else {
-				if (rdata->res.timer.relative)
-					clock_gettime(CLOCK_MONOTONIC, &rdata->res.timer.t_next);
-				ldata->wu_latency = 0UL;
+				/* not everyone is waiting, mark then wait */
+				rdata->res.barrier.waiting -= 1;
+				pthread_cond_wait(&(rdata->res.barrier.c_obj), &(rdata->res.barrier.m_obj));
+				rdata->res.barrier.waiting += 1;
 			}
-		}
-		break;
-	case rtapp_suspend:
-		{
-		log_debug("suspend %s ", rdata->name);
-		pthread_mutex_lock(&(ddata->res.mtx.obj));
-		pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
-		pthread_mutex_unlock(&(ddata->res.mtx.obj));
-		break;
-		}
-	case rtapp_resume:
-		{
-		log_debug("resume %s ", rdata->name);
-		pthread_mutex_lock(&(ddata->res.mtx.obj));
-		pthread_cond_broadcast(&(rdata->res.cond.obj));
-		pthread_mutex_unlock(&(ddata->res.mtx.obj));
-		break;
-		}
-	case rtapp_mem:
-		{
-			log_debug("mem %d", event->count);
-			memload(event->count, &rdata->res.buf);
-		}
-		break;
-	case rtapp_iorun:
-		{
-			log_debug("iorun %d", event->count);
-			ioload(event->count, &rdata->res.buf, ddata->res.dev.fd);
-		}
-		break;
-	case rtapp_yield:
-		{
-			log_debug("yield %d", event->count);
-			pthread_yield();
-		}
-		break;
-	case rtapp_fork:
-		{
-			log_debug("fork %s", rdata->res.fork.ref);
-
-			/*
-			 * Check if the current thread reached its limit of
-			 * number of allowable forks.
-			 * We enforce a limit to prevent infinite loops.
-			 */
-			if (rdata->res.fork.nforks >= FORKS_LIMIT) {
-				log_error("%s reached its fork limit (%d)", rdata->res.fork.tdata->name, FORKS_LIMIT);
-				exit(EXIT_FAILURE);
+			pthread_mutex_unlock(&(rdata->res.barrier.m_obj));
+			break;
+		case rtapp_sig_and_wait:
+			log_debug("signal and wait %s", rdata->name);
+			pthread_cond_signal(&(rdata->res.cond.obj));
+			pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
+			break;
+		case rtapp_broadcast:
+			pthread_cond_broadcast(&(rdata->res.cond.obj));
+			break;
+		case rtapp_sleep:
+			{
+				struct timespec sleep = usec_to_timespec(event->duration);
+				log_debug("sleep %d ", event->duration);
+				nanosleep(&sleep, NULL);
 			}
+			break;
+		case rtapp_run:
+			{
+				struct timespec t_start, t_end;
+				log_debug("run %d ", event->duration);
+				ldata->c_duration += event->duration;
+				clock_gettime(CLOCK_MONOTONIC, &t_start);
+				*perf += loadwait(event->duration, ops);
+				clock_gettime(CLOCK_MONOTONIC, &t_end);
+				t_end = timespec_sub(&t_end, &t_start);
+				ldata->duration += timespec_to_usec(&t_end);
+			}
+			break;
+		case rtapp_runtime:
+			{
+				struct timespec t_start, t_end;
+				int64_t diff_ns;
 
-			/*
-			 * If multiple threads race to fork, we must ensure
-			 * each one sees a unique index. Hence the lock.
-			 */
-			pthread_mutex_lock(&fork_mutex);
-			int new_thread_index = nthreads++;
-			threads = realloc(threads, nthreads * sizeof(*threads));
+				log_debug("runtime %d ", event->duration);
+				ldata->c_duration += event->duration;
+				clock_gettime(CLOCK_MONOTONIC, &t_start);
 
-			if (!threads) {
-				log_error("Failed to allocate memory for a new fork: %s", rdata->res.fork.tdata->name);
+				do {
+					/* Do work for 32usec  */
+					*perf += loadwait(32, ops);
+
+					clock_gettime(CLOCK_MONOTONIC, &t_end);
+					diff_ns = timespec_sub_to_ns(&t_end, &t_start);
+				} while ((diff_ns / 1000) < event->duration);
+
+				t_end = timespec_sub(&t_end, &t_start);
+				ldata->duration += timespec_to_usec(&t_end);
+			}
+			break;
+		case rtapp_timer:
+			{
+				struct timespec t_period, t_now, t_wu, t_slack;
+				log_debug("timer %d ", event->duration);
+
+				t_period = usec_to_timespec(event->duration);
+				ldata->c_period += event->duration;
+
+				if (rdata->res.timer.init == 0) {
+					rdata->res.timer.init = 1;
+					rdata->res.timer.t_next = *t_first;
+				}
+
+				rdata->res.timer.t_next = timespec_add(&rdata->res.timer.t_next, &t_period);
+				clock_gettime(CLOCK_MONOTONIC, &t_now);
+				t_slack = timespec_sub(&rdata->res.timer.t_next, &t_now);
+				if (opts.cumulative_slack)
+					ldata->slack += timespec_to_usec_long(&t_slack);
+				else
+					ldata->slack = timespec_to_usec_long(&t_slack);
+				if (timespec_lower(&t_now, &rdata->res.timer.t_next)) {
+					clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &rdata->res.timer.t_next, NULL);
+					clock_gettime(CLOCK_MONOTONIC, &t_now);
+					t_wu = timespec_sub(&t_now, &rdata->res.timer.t_next);
+					ldata->wu_latency += timespec_to_usec(&t_wu);
+				} else {
+					if (rdata->res.timer.relative)
+						clock_gettime(CLOCK_MONOTONIC, &rdata->res.timer.t_next);
+					ldata->wu_latency = 0UL;
+				}
+			}
+			break;
+		case rtapp_suspend:
+			{
+				log_debug("suspend %s ", rdata->name);
+				pthread_mutex_lock(&(ddata->res.mtx.obj));
+				pthread_cond_wait(&(rdata->res.cond.obj), &(ddata->res.mtx.obj));
+				pthread_mutex_unlock(&(ddata->res.mtx.obj));
+				break;
+			}
+		case rtapp_resume:
+			{
+				log_debug("resume %s ", rdata->name);
+				pthread_mutex_lock(&(ddata->res.mtx.obj));
+				pthread_cond_broadcast(&(rdata->res.cond.obj));
+				pthread_mutex_unlock(&(ddata->res.mtx.obj));
+				break;
+			}
+		case rtapp_mem:
+			{
+				log_debug("mem %d", event->count);
+				memload(event->count, &rdata->res.buf);
+			}
+			break;
+		case rtapp_iorun:
+			{
+				log_debug("iorun %d", event->count);
+				ioload(event->count, &rdata->res.buf, ddata->res.dev.fd);
+			}
+			break;
+		case rtapp_yield:
+			{
+				log_debug("yield %d", event->count);
+				pthread_yield();
+			}
+			break;
+		case rtapp_fork:
+			{
+				log_debug("fork %s", rdata->res.fork.ref);
+
+				/*
+				 * Check if the current thread reached its limit of
+				 * number of allowable forks.
+				 * We enforce a limit to prevent infinite loops.
+				 */
+				if (rdata->res.fork.nforks >= FORKS_LIMIT) {
+					log_error("%s reached its fork limit (%d)", rdata->res.fork.tdata->name, FORKS_LIMIT);
+					exit(EXIT_FAILURE);
+				}
+
+				/*
+				 * If multiple threads race to fork, we must ensure
+				 * each one sees a unique index. Hence the lock.
+				 */
+				pthread_mutex_lock(&fork_mutex);
+				int new_thread_index = nthreads++;
+				threads = realloc(threads, nthreads * sizeof(*threads));
+
+				if (!threads) {
+					log_error("Failed to allocate memory for a new fork: %s", rdata->res.fork.tdata->name);
+					pthread_mutex_unlock(&fork_mutex);
+					exit(EXIT_FAILURE);
+				}
+
+				/*
+				 * Find the thread data associated with this fork and
+				 * store it in tdata; this needs to be done once if the
+				 * fork is done within a loop.
+				 *
+				 * Note that we can't search for the reference at parse
+				 * time because we are not guaranteed that the task
+				 * that is referenced was already parsed; it'll depend
+				 * greatly on the ordering within the defined json
+				 * file.
+				 */
+				if (!rdata->res.fork.tdata) {
+					rdata->res.fork.tdata = find_thread_data(rdata->res.fork.ref, &opts);
+				}
+
+				int ret = create_thread(rdata->res.fork.tdata, new_thread_index, 1, rdata->res.fork.nforks++);
+				if (ret) {
+					pthread_mutex_unlock(&fork_mutex);
+					exit(EXIT_FAILURE);
+				}
+
+				running_threads = nthreads;
+
 				pthread_mutex_unlock(&fork_mutex);
-				exit(EXIT_FAILURE);
 			}
-
-			/*
-			 * Find the thread data associated with this fork and
-			 * store it in tdata; this needs to be done once if the
-			 * fork is done within a loop.
-			 *
-			 * Note that we can't search for the reference at parse
-			 * time because we are not guaranteed that the task
-			 * that is referenced was already parsed; it'll depend
-			 * greatly on the ordering within the defined json
-			 * file.
-			 */
-			if (!rdata->res.fork.tdata) {
-				rdata->res.fork.tdata = find_thread_data(rdata->res.fork.ref, &opts);
-			}
-
-			int ret = create_thread(rdata->res.fork.tdata, new_thread_index, 1, rdata->res.fork.nforks++);
-			if (ret) {
-				pthread_mutex_unlock(&fork_mutex);
-				exit(EXIT_FAILURE);
-			}
-
-			running_threads = nthreads;
-
-			pthread_mutex_unlock(&fork_mutex);
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 
 	return lock;
 }
 
 int run(int ind,
-	phase_data_t *pdata,
-	rtapp_resource_t *resources,
-	struct timespec *t_first,
-	log_data_t *ldata, int *ops)
+		phase_data_t *pdata,
+		rtapp_resource_t *resources,
+		struct timespec *t_first,
+		log_data_t *ldata, unsigned long int *ops)
 {
 	event_data_t *events = pdata->events;
 	int nbevents = pdata->nbevents;
@@ -608,11 +608,11 @@ int run(int ind,
 
 		log_debug("[%d] runs events %d type %d ", ind, i, events[i].type);
 		if (opts.ftrace)
-				log_ftrace(ft_data.marker_fd,
-						"[%d] executing %d",
-						ind, i);
+			log_ftrace(ft_data.marker_fd,
+					"[%d] executing %d",
+					ind, i);
 		lock += run_event(&events[i], !continue_running, &perf,
-				  resources, t_first, ldata, ops);
+				resources, t_first, ldata, ops);
 	}
 
 	return perf;
@@ -687,7 +687,7 @@ static void __shutdown(bool force_terminate)
 	exit(EXIT_SUCCESS);
 }
 
-static void
+	static void
 shutdown(int sig)
 {
 	__shutdown(true);
@@ -696,7 +696,7 @@ shutdown(int sig)
 static void create_cpuset_str(cpuset_data_t *cpu_data)
 {
 	unsigned int cpu_count = CPU_COUNT_S(cpu_data->cpusetsize,
-							cpu_data->cpuset);
+			cpu_data->cpuset);
 	unsigned int i;
 	unsigned int idx = 0;
 
@@ -727,7 +727,7 @@ static void create_cpuset_str(cpuset_data_t *cpu_data)
 				exit(EXIT_FAILURE);
 			}
 			n = snprintf(&cpu_data->cpuset_str[idx],
-						size_needed - idx - 1, "%u", i);
+					size_needed - idx - 1, "%u", i);
 			if (n > 0) {
 				idx += n;
 			} else {
@@ -740,7 +740,7 @@ static void create_cpuset_str(cpuset_data_t *cpu_data)
 			}
 			if (cpu_count) {
 				strncat(cpu_data->cpuset_str, ", ",
-							size_needed - idx - 1);
+						size_needed - idx - 1);
 				idx += 2;
 			}
 		}
@@ -759,7 +759,7 @@ static void set_thread_affinity(thread_data_t *data, cpuset_data_t *cpu_data)
 		unsigned int cpu_count;
 
 		ret = pthread_getaffinity_np(pthread_self(),
-						    sizeof(cpu_set_t), &cpuset);
+				sizeof(cpu_set_t), &cpuset);
 		if (ret != 0) {
 			errno = ret;
 			perror("pthread_get_affinity");
@@ -769,7 +769,7 @@ static void set_thread_affinity(thread_data_t *data, cpuset_data_t *cpu_data)
 		data->def_cpu_data.cpusetsize = CPU_ALLOC_SIZE(cpu_count);
 		data->def_cpu_data.cpuset = CPU_ALLOC(cpu_count);
 		memcpy(data->def_cpu_data.cpuset, &cpuset,
-						data->def_cpu_data.cpusetsize);
+				data->def_cpu_data.cpusetsize);
 		create_cpuset_str(&data->def_cpu_data);
 		data->curr_cpu_data = &data->def_cpu_data;
 	}
@@ -789,10 +789,10 @@ static void set_thread_affinity(thread_data_t *data, cpuset_data_t *cpu_data)
 	if (!CPU_EQUAL(actual_cpu_data->cpuset, data->curr_cpu_data->cpuset))
 	{
 		log_debug("[%d] setting cpu affinity to CPU(s) %s", data->ind,
-			actual_cpu_data->cpuset_str);
+				actual_cpu_data->cpuset_str);
 		ret = pthread_setaffinity_np(pthread_self(),
-						actual_cpu_data->cpusetsize,
-						actual_cpu_data->cpuset);
+				actual_cpu_data->cpusetsize,
+				actual_cpu_data->cpuset);
 		if (ret != 0) {
 			errno = ret;
 			perror("pthread_setaffinity_np");
@@ -837,7 +837,7 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 					&param);
 			if (ret != 0) {
 				log_critical("[%d] pthread_setschedparam"
-				     "returned %d", data->ind, ret);
+						"returned %d", data->ind, ret);
 				errno = ret;
 				perror("pthread_setschedparam");
 				exit(EXIT_FAILURE);
@@ -851,9 +851,9 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 
 			if (sched_data->prio > 19 || sched_data->prio < -20) {
 				log_critical("[%d] setpriority "
-					"%d nice invalid. "
-					"Valid between -20 and 19",
-					data->ind, sched_data->prio);
+						"%d nice invalid. "
+						"Valid between -20 and 19",
+						data->ind, sched_data->prio);
 				exit(EXIT_FAILURE);
 			}
 
@@ -865,7 +865,7 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 						&param);
 				if (ret != 0) {
 					log_critical("[%d] pthread_setschedparam "
-					     "returned %d", data->ind, ret);
+							"returned %d", data->ind, ret);
 					errno = ret;
 					perror("pthread_setschedparam");
 					exit(EXIT_FAILURE);
@@ -877,7 +877,7 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 					sched_data->prio);
 			if (ret != 0) {
 				log_critical("[%d] setpriority "
-				     "returned %d", data->ind, ret);
+						"returned %d", data->ind, ret);
 				errno = ret;
 				perror("setpriority");
 				exit(EXIT_FAILURE);
@@ -910,7 +910,7 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 				perror("sched_setattr");
 				exit(EXIT_FAILURE);
 			}
-		break;
+			break;
 #endif
 
 		default:
@@ -922,6 +922,10 @@ static void set_thread_priority(thread_data_t *data, sched_data_t *sched_data)
 
 	data->curr_sched_data = sched_data;
 }
+
+static unsigned long int total_ops = 0;
+const char* ops_file = "ops_file";
+pthread_mutex_t lock;
 
 void *thread_body(void *arg)
 {
@@ -938,7 +942,8 @@ void *thread_body(void *arg)
 	unsigned int timings_size, timing_loop;
 	struct sched_attr attr;
 	int ret, phase, phase_loop, thread_loop, log_idx;
-	int ops = 0;
+	unsigned long int ops = 0;
+	FILE* opsf;
 
 	/* Set thread name */
 	ret = pthread_setname_np(pthread_self(), data->name);
@@ -979,8 +984,8 @@ void *thread_body(void *arg)
 		clock_gettime(CLOCK_MONOTONIC, &t_zero);
 		if (opts.ftrace)
 			log_ftrace(ft_data.marker_fd,
-				"[%d] sets zero time",
-				data->ind);
+					"[%d] sets zero time",
+					data->ind);
 	}
 
 	if (!data->forked)
@@ -992,9 +997,9 @@ void *thread_body(void *arg)
 
 	if (opts.logsize)
 		fprintf(data->log_handler, "%s %8s %8s %8s %15s %15s %15s %10s %10s %10s %10s %8s\n",
-				   "#idx", "perf", "run", "period",
-				   "start", "end", "rel_st", "slack",
-				   "c_duration", "c_period", "wu_lat", "cpu");
+				"#idx", "perf", "run", "period",
+				"start", "end", "rel_st", "slack",
+				"c_duration", "c_period", "wu_lat", "cpu");
 
 	if (opts.ftrace)
 		log_ftrace(ft_data.marker_fd, "[%d] starts", data->ind);
@@ -1038,10 +1043,10 @@ void *thread_body(void *arg)
 
 		if (opts.ftrace)
 			log_ftrace(ft_data.marker_fd,
-				   "[%d] begins thread_loop %d phase %d phase_loop %d",
-				   data->ind, thread_loop, phase, phase_loop);
+					"[%d] begins thread_loop %d phase %d phase_loop %d",
+					data->ind, thread_loop, phase, phase_loop);
 		log_debug("[%d] begins thread_loop %d phase %d phase_loop %d",
-			  data->ind, thread_loop, phase, phase_loop);
+				data->ind, thread_loop, phase, phase_loop);
 
 		memset(&ldata, 0, sizeof(ldata));
 		clock_gettime(CLOCK_MONOTONIC, &t_start);
@@ -1074,8 +1079,8 @@ void *thread_body(void *arg)
 
 		if (opts.ftrace)
 			log_ftrace(ft_data.marker_fd,
-				   "[%d] end thread_loop %d phase %d phase_loop %d",
-				   data->ind, thread_loop, phase, phase_loop);
+					"[%d] end thread_loop %d phase %d phase_loop %d",
+					data->ind, thread_loop, phase, phase_loop);
 
 		phase_loop++;
 		/* Reached the specified number of loops for this phase. */
@@ -1109,8 +1114,8 @@ void *thread_body(void *arg)
 
 	param.sched_priority = 0;
 	ret = pthread_setschedparam(pthread_self(),
-				    SCHED_OTHER,
-				    &param);
+			SCHED_OTHER,
+			&param);
 	if (ret != 0) {
 		errno = ret;
 		perror("pthread_setschedparam");
@@ -1125,8 +1130,15 @@ void *thread_body(void *arg)
 		for (j = 0; j < log_idx; j++)
 			log_timing(data->log_handler, &timings[j]);
 	}
-	fprintf(data->log_handler,"Total wasted cycles =%d\n",ops);
 
+
+	pthread_mutex_lock(&lock);
+	opsf = fopen(ops_file,"w");
+	total_ops += ops;
+	fprintf(opsf,"%lu\n",total_ops);
+	fclose(opsf);
+	fprintf(data->log_handler,"Total wasted cycles = %lu\n",ops);
+	pthread_mutex_unlock(&lock);
 
 	if (opts.ftrace)
 		log_ftrace(ft_data.marker_fd, "[%d] exiting", data->ind);
@@ -1152,9 +1164,9 @@ void setup_thread_logging(thread_data_t *tdata)
 
 	if (opts.logdir) {
 		snprintf(tmp, PATH_LENGTH, "%s/%s-%s.log",
-			 opts.logdir,
-			 opts.logbasename,
-			 tdata->name);
+				opts.logdir,
+				opts.logbasename,
+				tdata->name);
 		tdata->log_handler = fopen(tmp, "w");
 		if (!tdata->log_handler) {
 			log_error("Cannot open logfile %s", tmp);
@@ -1174,6 +1186,12 @@ int main(int argc, char* argv[])
 	static cpu_set_t orig_set;
 
 	parse_command_line(argc, argv, &opts);
+
+	if (pthread_mutex_init(&lock, NULL) != 0) 
+	{ 
+		printf("\n mutex init has failed\n"); 
+		return 1; 
+	} 
 
 	/* allocated threads */
 	nthreads = opts.nthreads;
@@ -1231,31 +1249,31 @@ int main(int argc, char* argv[])
 	if (opts.logdir && opts.gnuplot) {
 		/* gnuplot plot of the period */
 		snprintf(tmp, PATH_LENGTH, "%s/%s-period.plot",
-			 opts.logdir, opts.logbasename);
+				opts.logdir, opts.logbasename);
 		gnuplot_script = fopen(tmp, "w+");
 		snprintf(tmp, PATH_LENGTH, "%s-period.eps",
-			 opts.logbasename);
+				opts.logbasename);
 		fprintf(gnuplot_script,
-			"set terminal postscript enhanced color\n"
-			"set xtics rotate by 45 right\n"
-			"set output '%s'\n"
-			"set grid\n"
-			"set key outside right\n"
-			"set title \"Measured time per loop\"\n"
-			"set xlabel \"Loop start time [usec]\"\n"
-			"set ylabel \"Period Time [usec]\"\n"
-			"set xtics rotate by -45\n"
-			"set key noenhanced\n"
-			"plot ", tmp);
+				"set terminal postscript enhanced color\n"
+				"set xtics rotate by 45 right\n"
+				"set output '%s'\n"
+				"set grid\n"
+				"set key outside right\n"
+				"set title \"Measured time per loop\"\n"
+				"set xlabel \"Loop start time [usec]\"\n"
+				"set ylabel \"Period Time [usec]\"\n"
+				"set xtics rotate by -45\n"
+				"set key noenhanced\n"
+				"plot ", tmp);
 
 		for (i=0; i<nthreads; i++) {
 			fprintf(gnuplot_script,
-				"\"%s-%s-%d.log\" u ($5/1000):4 w l"
-				" title \"thread [%s] (%s)\"",
-				opts.logbasename, opts.threads_data[i].name,
-				opts.threads_data[i].ind,
-				opts.threads_data[i].name,
-				policy_to_string(opts.threads_data[i].sched_data->policy));
+					"\"%s-%s-%d.log\" u ($5/1000):4 w l"
+					" title \"thread [%s] (%s)\"",
+					opts.logbasename, opts.threads_data[i].name,
+					opts.threads_data[i].ind,
+					opts.threads_data[i].name,
+					policy_to_string(opts.threads_data[i].sched_data->policy));
 
 			if ( i == nthreads-1)
 				fprintf(gnuplot_script, "\n");
@@ -1268,30 +1286,30 @@ int main(int argc, char* argv[])
 
 		/* gnuplot of the run time */
 		snprintf(tmp, PATH_LENGTH, "%s/%s-run.plot",
-			 opts.logdir, opts.logbasename);
+				opts.logdir, opts.logbasename);
 		gnuplot_script = fopen(tmp, "w+");
 		snprintf(tmp, PATH_LENGTH, "%s-run.eps",
-			 opts.logbasename);
+				opts.logbasename);
 		fprintf(gnuplot_script,
-			"set terminal postscript enhanced color\n"
-			"set output '%s'\n"
-			"set grid\n"
-			"set key outside right\n"
-			"set title \"Measured run time per loop\"\n"
-			"set xlabel \"Loop start time [usec]\"\n"
-			"set ylabel \"Run Time [usec]\"\n"
-			"set xtics rotate by -45\n"
-			"set key noenhanced\n"
-			"plot ", tmp);
+				"set terminal postscript enhanced color\n"
+				"set output '%s'\n"
+				"set grid\n"
+				"set key outside right\n"
+				"set title \"Measured run time per loop\"\n"
+				"set xlabel \"Loop start time [usec]\"\n"
+				"set ylabel \"Run Time [usec]\"\n"
+				"set xtics rotate by -45\n"
+				"set key noenhanced\n"
+				"plot ", tmp);
 
 		for (i=0; i<nthreads; i++) {
 			fprintf(gnuplot_script,
-				"\"%s-%s-%d.log\" u ($5/1000):3 w l"
-				" title \"thread [%s] (%s)\"",
-				opts.logbasename, opts.threads_data[i].name,
-				opts.threads_data[i].ind,
-				opts.threads_data[i].name,
-				policy_to_string(opts.threads_data[i].sched_data->policy));
+					"\"%s-%s-%d.log\" u ($5/1000):3 w l"
+					" title \"thread [%s] (%s)\"",
+					opts.logbasename, opts.threads_data[i].name,
+					opts.threads_data[i].ind,
+					opts.threads_data[i].name,
+					policy_to_string(opts.threads_data[i].sched_data->policy));
 
 			if ( i == nthreads-1)
 				fprintf(gnuplot_script, "\n");
@@ -1305,42 +1323,42 @@ int main(int argc, char* argv[])
 		/* gnuplot of each task */
 		for (i=0; i<nthreads; i++) {
 			snprintf(tmp, PATH_LENGTH, "%s/%s-%s-%d.plot",
-				 opts.logdir, opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind );
+					opts.logdir, opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind );
 			gnuplot_script = fopen(tmp, "w+");
 			snprintf(tmp, PATH_LENGTH, "%s-%s.eps",
-				opts.logbasename, opts.threads_data[i].name);
+					opts.logbasename, opts.threads_data[i].name);
 			fprintf(gnuplot_script,
-				"set terminal postscript enhanced color\n"
-				"set output '%s'\n"
-				"set grid\n"
-				"set key outside right\n"
-				"set title \"Measured %s Loop stats\"\n"
-				"set xlabel \"Loop start time [msec]\"\n"
-				"set ylabel \"Period/Run Time [usec]\"\n"
-				"set y2label \"Load [number of 1000 loops executed]\"\n"
-				"set y2tics  \n"
-				"set xtics rotate by -45\n"
-				"plot ", tmp, opts.threads_data[i].name);
+					"set terminal postscript enhanced color\n"
+					"set output '%s'\n"
+					"set grid\n"
+					"set key outside right\n"
+					"set title \"Measured %s Loop stats\"\n"
+					"set xlabel \"Loop start time [msec]\"\n"
+					"set ylabel \"Period/Run Time [usec]\"\n"
+					"set y2label \"Load [number of 1000 loops executed]\"\n"
+					"set y2tics  \n"
+					"set xtics rotate by -45\n"
+					"plot ", tmp, opts.threads_data[i].name);
 
 			fprintf(gnuplot_script,
-				"\"%s-%s-%d.log\" u ($5/1000000):2 w l"
-				" title \"load \" axes x1y2, ",
-				opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
+					"\"%s-%s-%d.log\" u ($5/1000000):2 w l"
+					" title \"load \" axes x1y2, ",
+					opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
 
 			fprintf(gnuplot_script,
-				"\"%s-%s-%d.log\" u ($5/1000000):3 w l"
-				" title \"run \", ",
-				opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
+					"\"%s-%s-%d.log\" u ($5/1000000):3 w l"
+					" title \"run \", ",
+					opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
 
 			fprintf(gnuplot_script,
-				"\"%s-%s-%d.log\" u ($5/1000000):4 w l"
-				" title \"period \" ",
-				opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
+					"\"%s-%s-%d.log\" u ($5/1000000):4 w l"
+					" title \"period \" ",
+					opts.logbasename, opts.threads_data[i].name, opts.threads_data[i].ind);
 
 			fprintf(gnuplot_script, "\n");
 
-		fprintf(gnuplot_script, "set terminal wxt\nreplot\n");
-		fclose(gnuplot_script);
+			fprintf(gnuplot_script, "set terminal wxt\nreplot\n");
+			fclose(gnuplot_script);
 		}
 
 	}
