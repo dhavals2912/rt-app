@@ -1,0 +1,94 @@
+{
+	"tasks" : {
+		"c1" : {
+			"loop" : -1,
+			"instances" : 1,
+			"runtime" : 1000000,
+			"timer" : { "ref" : "uniqueDD", "period" : 1000000 }
+		},	
+		"thread0" : {
+			"instances" : 40,
+			"loop" : -1,
+			"runtime" : 700000,
+			"sleep" : 100000,
+			"resume" : "thread1",
+			"suspend" : "thread0",
+			"timer" : { "ref" : "uniqueA", "period" : 1000000 }
+		},
+		"thread1" : {
+			"instances" : 40,
+			"loop" : -1,
+			"run" :     1000000,
+			"sleep" : 100000,
+			"resume" : "thread0",
+			"suspend" : "thread1",
+			"timer" : { "ref" : "uniqueB", "period" : 4000000 }
+		},
+		"thread2" : {
+			"instances" : 14,
+			"loop" : -1,
+			"runtime" : 700000,
+			"sleep" : 100000,
+			"resume" : "thread3",
+			"suspend" : "thread2",
+			"timer" : { "ref" : "uniqueA", "period" : 1000000 }
+		},
+		"thread3" : {
+			"instances" : 14,
+			"loop" : -1,
+			"run" :     1000000,
+			"sleep" : 100000,
+			"resume" : "thread2",
+			"suspend" : "thread3",
+			"timer" : { "ref" : "uniqueB", "period" : 4000000 }
+		},
+		"thread4" : {
+			"instances" : 200,
+			"loop" : -1,
+			"runtime" : 700000,
+			"sleep" : 100000,
+			"resume" : "thread5",
+			"suspend" : "thread4",
+			"timer" : { "ref" : "uniqueA", "period" : 1000000 }
+		},
+		"thread5" : {
+			"instances" : 200,
+			"loop" : -1,
+			"run" :     600000,
+			"sleep" : 100000,
+			"resume" : "thread4",
+			"suspend" : "thread5",
+			"timer" : { "ref" : "uniqueB", "period" : 4000000 }
+		},
+		"y1" : {
+			"instances" : 30,
+			"loop" : -1,
+			"run" :     10000,
+			"sleep" : 100000,
+			"resume" : "y0",
+			"suspend" : "y1",
+			"timer" : { "ref" : "uniqueg", "period" : 100000 }
+		},
+		"y0" : {
+			"instances" : 30,
+			"loop" : -1,
+			"run" :     10000,
+			"sleep" : 100000,
+			"resume" : "y1",
+			"suspend" : "y0",
+			"timer" : { "ref" : "uniqueh", "period" : 100000 }
+		}
+	},
+	"global" : {
+		"duration" : 20,
+		"calibration" : "CPU0",
+		"default_policy" : "SCHED_OTHER",
+		"pi_enabled" : false,
+		"lock_pages" : false,
+		"logdir" : "./",
+		"log_size" : "disable",
+		"log_basename" : "rt-app2",
+		"ftrace" : false,
+		"gnuplot" : false
+	}
+}

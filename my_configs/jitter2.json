@@ -1,0 +1,37 @@
+{
+	"tasks" : {
+		"c1" : {
+			"loop" : -1,
+			"instance" : 1,
+			"cpus" : [2,8,10],
+			"run" : 1000000
+		},	
+		"thread0" : {
+			"instance" : 1,
+			"loop" : -1,
+			"sleep" : 10000,
+			"runtime" : 1000000,
+			"resume" : "thread1",
+			"suspend" : "thread0"
+		},
+		"thread1" : {
+			"instance" : 1,
+			"loop" : -1,
+			"sleep" :50000,
+			"run" :  1000000,
+			"resume" : "thread0",
+			"suspend" : "thread1"
+		}
+	},
+	"global" : {
+		"duration" : 20,
+		"calibration" : "CPU0",
+		"default_policy" : "SCHED_OTHER",
+		"pi_enabled" : false,
+		"lock_pages" : false,
+		"logdir" : "./",
+		"log_basename" : "rt-app2",
+		"ftrace" : false,
+		"gnuplot" : false
+	}
+}
